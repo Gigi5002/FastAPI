@@ -1,11 +1,13 @@
-import mimetypes
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Query, Path
  
 app = FastAPI()
  
-@app.get("/")
-def root():
-    return FileResponse("public/index.html", 
-                        filename="mainpage.html", 
-                        media_type="application/octet-stream")
+@app.get("/users")
+def users(people: list[str]  = Query()):
+    return {"people": people}
+
+ 
+@app.get("/users/{name}")
+def users(name:str  = Path(min_length=3, max_length=20), 
+            age: int = Query(ge=18, lt=111)):
+    return {"name": name, "age": age}
