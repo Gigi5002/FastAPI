@@ -1,11 +1,12 @@
 from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
  
 app = FastAPI()
  
-@app.get("/")
-def root():
-    return {"message": "Hello METANIT.COM"}
+@app.get("/text", response_class = PlainTextResponse)
+def root_text():
+    return "Hello METANIT.COM"
  
-@app.get("/about")
-def about():
-    return {"message": "О сайте"}
+@app.get("/html", response_class = HTMLResponse)
+def root_html():
+    return "<h2>Hello METANIT.COM</h2>"
