@@ -1,13 +1,15 @@
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Body
+from fastapi.responses import FileResponse
  
 app = FastAPI()
  
-@app.get("/users")
-def users(people: list[str]  = Query()):
-    return {"people": people}
-
+@app.get("/")
+def root():
+    return FileResponse("public/index.html")
  
-@app.get("/users/{name}")
-def users(name:str  = Path(min_length=3, max_length=20), 
-            age: int = Query(ge=18, lt=111)):
-    return {"name": name, "age": age}
+@app.post("/hello")
+#def hello(name = Body(embed=True)):
+def hello(data = Body()):
+    name = data["name"]
+    age = data["age"]
+    return {"message": f"{name}, ваш возраст - {age}"}
