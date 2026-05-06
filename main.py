@@ -1,12 +1,11 @@
+import mimetypes
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
+from fastapi.responses import FileResponse
  
 app = FastAPI()
  
-@app.get("/text", response_class = PlainTextResponse)
-def root_text():
-    return "Hello METANIT.COM"
- 
-@app.get("/html", response_class = HTMLResponse)
-def root_html():
-    return "<h2>Hello METANIT.COM</h2>"
+@app.get("/")
+def root():
+    return FileResponse("public/index.html", 
+                        filename="mainpage.html", 
+                        media_type="application/octet-stream")
