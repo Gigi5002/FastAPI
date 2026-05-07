@@ -1,15 +1,29 @@
-from fastapi import FastAPI, Form
-from fastapi.responses import FileResponse
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import  Column, Integer, String
  
+from fastapi import FastAPI
+ 
+# строка подключения
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+ 
+# создаем движок SqlAlchemy
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+#создаем базовый класс для моделей
+class Base(DeclarativeBase): pass
+ 
+# создаем модель, объекты которой будут храниться в бд
+class Person(Base):
+    __tablename__ = "people"
+ 
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    age = Column(Integer,)
+ 
+# создаем таблицы
+Base.metadata.create_all(bind=engine)
+ 
+# приложение, которое ничего не делает
 app = FastAPI()
- 
- 
-@app.get("/")
-def root():
-    return FileResponse("public/index.html")
- 
- 
-@app.post("/postdata")
-def postdata(username: str = Form(), 
-            languages: list =Form()):
-    return {"name": username, "languages": languages}
