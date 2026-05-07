@@ -1,17 +1,15 @@
-from fastapi import FastAPI, Response, Cookie
-from datetime import datetime
+from fastapi import FastAPI, Form
+from fastapi.responses import FileResponse
  
 app = FastAPI()
  
+ 
 @app.get("/")
-def root(response: Response):
-    now = datetime.now()    # получаем текущую дату и время
-    response.set_cookie(key="last_visit", value=now)
-    return  {"message": "куки установлены"}
-
-@app.get("/visit")
-def root(last_visit: str | None = Cookie(default=None)):
-    if last_visit == None:
-        return {"message": "Это ваш первый визит на сайт"}
-    else:
-        return  {"message": f"Ваш последний визит: {last_visit}"}
+def root():
+    return FileResponse("public/index.html")
+ 
+ 
+@app.post("/postdata")
+def postdata(username: str = Form(), 
+            languages: list =Form()):
+    return {"name": username, "languages": languages}
