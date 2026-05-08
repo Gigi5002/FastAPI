@@ -1,15 +1,29 @@
-from fastapi import FastAPI, Form
-from fastapi.responses import FileResponse
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import  Column, Integer, String
  
+from fastapi import FastAPI
+ 
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+ 
+ 
+class Base(DeclarativeBase): pass
+class Person(Base):
+    __tablename__ = "people"
+ 
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    age = Column(Integer,)
+ 
+SessionLocal = sessionmaker(autoflush=False, bind=engine)
+db = SessionLocal()
+ 
+# получение всех объектов
+people = db.query(Person).all()
+for p in people:
+    print(f"{p.id}.{p.name} ({p.age})")
+ 
+# приложение, которое ничего не делает
 app = FastAPI()
- 
- 
-@app.get("/")
-def root():
-    return FileResponse("public/index.html")
- 
- 
-@app.post("/postdata")
-def postdata(username: str = Form(), 
-            languages: list =Form()):
-    return {"name": username, "languages": languages}
