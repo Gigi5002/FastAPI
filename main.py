@@ -1,20 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import  Column, Integer, String
  
 from fastapi import FastAPI
  
-# строка подключения
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
  
-# создаем движок SqlAlchemy
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-#создаем базовый класс для моделей
+ 
 class Base(DeclarativeBase): pass
- 
-# создаем модель, объекты которой будут храниться в бд
 class Person(Base):
     __tablename__ = "people"
  
@@ -22,8 +17,13 @@ class Person(Base):
     name = Column(String)
     age = Column(Integer,)
  
-# создаем таблицы
-Base.metadata.create_all(bind=engine)
+SessionLocal = sessionmaker(autoflush=False, bind=engine)
+db = SessionLocal()
+ 
+# получение всех объектов
+people = db.query(Person).all()
+for p in people:
+    print(f"{p.id}.{p.name} ({p.age})")
  
 # приложение, которое ничего не делает
 app = FastAPI()
