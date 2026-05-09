@@ -1,0 +1,28 @@
+version: "3"
+services:
+  app:
+    build: .
+    restart: always
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: fastapi-admin
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # Раз в .env нет пароля, разрешаем пустой
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: always
